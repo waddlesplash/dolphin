@@ -216,8 +216,8 @@ enum wxPosixPermissions
         #define wxFtell _ftelli64
     #elif wxCHECK_MINGW32_VERSION(3, 5) // mingw-runtime version (not gcc)
         #define wxHAS_HUGE_STDIO_FILES
-        #define wxFseek fseeko64
-        #define wxFtell ftello64
+		#define wxFseek fseek
+		#define wxFtell ftell
     #endif
 
     // other Windows compilers (DMC, Watcom, and Borland) don't have huge file

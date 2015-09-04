@@ -417,16 +417,16 @@ u64 GetSize(const int fd)
 u64 GetSize(FILE *f)
 {
 	// can't use off_t here because it can be 32-bit
-	u64 pos = ftello(f);
-	if (fseeko(f, 0, SEEK_END) != 0)
+	u64 pos = ftell(f);
+	if (fseek(f, 0, SEEK_END) != 0)
 	{
 		ERROR_LOG(COMMON, "GetSize: seek failed %p: %s",
 			  f, GetLastErrorMsg().c_str());
 		return 0;
 	}
 
-	u64 size = ftello(f);
-	if ((size != pos) && (fseeko(f, pos, SEEK_SET) != 0))
+	u64 size = ftell(f);
+	if ((size != pos) && (fseek(f, pos, SEEK_SET) != 0))
 	{
 		ERROR_LOG(COMMON, "GetSize: seek failed %p: %s",
 			  f, GetLastErrorMsg().c_str());
@@ -960,7 +960,7 @@ u64 IOFile::GetSize()
 
 bool IOFile::Seek(s64 off, int origin)
 {
-	if (!IsOpen() || 0 != fseeko(m_file, off, origin))
+	if (!IsOpen() || 0 != fseek(m_file, off, origin))
 		m_good = false;
 
 	return m_good;
@@ -969,7 +969,7 @@ bool IOFile::Seek(s64 off, int origin)
 u64 IOFile::Tell() const
 {
 	if (IsOpen())
-		return ftello(m_file);
+		return ftell(m_file);
 	else
 		return -1;
 }
