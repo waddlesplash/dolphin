@@ -1,17 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
@@ -24,7 +16,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
@@ -39,47 +31,57 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\VSProps\Base.props" />
-    <Import Project="..\..\VSProps\PrecompiledHeader.props" />
+    <Import Project="..\..\VSProps\PCHUse.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <ClCompile Include="Src\ControllerEmu.cpp" />
-    <ClCompile Include="Src\ControllerInterface\ControllerInterface.cpp" />
-    <ClCompile Include="Src\ControllerInterface\Device.cpp" />
-    <ClCompile Include="Src\ControllerInterface\DInput\DInput.cpp" />
-    <ClCompile Include="Src\ControllerInterface\DInput\DInputJoystick.cpp" />
-    <ClCompile Include="Src\ControllerInterface\DInput\DInputKeyboardMouse.cpp" />
-    <ClCompile Include="Src\ControllerInterface\ExpressionParser.cpp" />
-    <ClCompile Include="Src\ControllerInterface\SDL\SDL.cpp" />
-    <ClCompile Include="Src\ControllerInterface\XInput\XInput.cpp" />
-    <ClCompile Include="Src\InputConfig.cpp" />
-    <ClCompile Include="Src\stdafx.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
+    <ClCompile Include="ControllerEmu.cpp" />
+    <ClCompile Include="ControllerInterface\ControllerInterface.cpp" />
+    <ClCompile Include="ControllerInterface\Device.cpp" />
+    <ClCompile Include="ControllerInterface\DInput\DInput.cpp" />
+    <ClCompile Include="ControllerInterface\DInput\DInputJoystick.cpp" />
+    <ClCompile Include="ControllerInterface\DInput\DInputKeyboardMouse.cpp" />
+    <ClCompile Include="ControllerInterface\DInput\XInputFilter.cpp">
+      <!--Disable /Zc:strictStrings so that wbem headers may compile-->
+      <!--
+        This is somewhat gross as it doesn't dynamically remove the option,
+        I really hope the issue is fixed in next VS release :(
+        -->
+      <AdditionalOptions>/Zo /Zc:inline /Zc:rvalueCast /volatile:iso</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="Src\UDPWiimote.cpp" />
-    <ClCompile Include="Src\UDPWrapper.cpp" />
+    <ClCompile Include="ControllerInterface\ExpressionParser.cpp" />
+    <ClCompile Include="ControllerInterface\ForceFeedback\ForceFeedbackDevice.cpp" />
+    <ClCompile Include="ControllerInterface\XInput\XInput.cpp" />
+    <ClCompile Include="GCAdapter.cpp">
+      <!--
+      Disable "nonstandard extension used : zero-sized array in struct/union" warning,
+      which is hit in libusb.h.
+      -->
+      <DisableSpecificWarnings>4200;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="InputConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\ControllerEmu.h" />
-    <ClInclude Include="Src\ControllerInterface\ControllerInterface.h" />
-    <ClInclude Include="Src\ControllerInterface\Device.h" />
-    <ClInclude Include="Src\ControllerInterface\DInput\DInput.h" />
-    <ClInclude Include="Src\ControllerInterface\DInput\DInputJoystick.h" />
-    <ClInclude Include="Src\ControllerInterface\DInput\DInputKeyboardMouse.h" />
-    <ClInclude Include="Src\ControllerInterface\ExpressionParser.h" />
-    <ClInclude Include="Src\ControllerInterface\SDL\SDL.h" />
-    <ClInclude Include="Src\ControllerInterface\XInput\XInput.h" />
-    <ClInclude Include="Src\GCPadStatus.h" />
-    <ClInclude Include="Src\InputConfig.h" />
-    <ClInclude Include="Src\stdafx.h" />
-    <ClInclude Include="Src\UDPWiimote.h" />
-    <ClInclude Include="Src\UDPWrapper.h" />
+    <ClInclude Include="ControllerEmu.h" />
+    <ClInclude Include="ControllerInterface\ControllerInterface.h" />
+    <ClInclude Include="ControllerInterface\Device.h" />
+    <ClInclude Include="ControllerInterface\DInput\DInput.h" />
+    <ClInclude Include="ControllerInterface\DInput\DInput8.h" />
+    <ClInclude Include="ControllerInterface\DInput\DInputJoystick.h" />
+    <ClInclude Include="ControllerInterface\DInput\DInputKeyboardMouse.h" />
+    <ClInclude Include="ControllerInterface\DInput\XInputFilter.h" />
+    <ClInclude Include="ControllerInterface\ExpressionParser.h" />
+    <ClInclude Include="ControllerInterface\ForceFeedback\ForceFeedbackDevice.h" />
+    <ClInclude Include="ControllerInterface\XInput\XInput.h" />
+    <ClInclude Include="GCAdapter.h" />
+    <ClInclude Include="GCPadStatus.h" />
+    <ClInclude Include="InputConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.vcxproj">
+    <ProjectReference Include="$(CoreDir)Common\Common.vcxproj">
       <Project>{2e6c348c-c75c-4d94-8d1e-9c1fcbf3efe4}</Project>
     </ProjectReference>
   </ItemGroup>

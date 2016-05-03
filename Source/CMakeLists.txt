@@ -7,7 +7,7 @@ if(ENABLE_PCH)
 	else()
 		set(pch_lib_filename "${CMAKE_CURRENT_BINARY_DIR}/libpch.a")
 	endif()
-	set(pch_src_filename "${CMAKE_CURRENT_SOURCE_DIR}/pch.h")
+	set(pch_src_filename "${CMAKE_CURRENT_SOURCE_DIR}/PCH/pch.h")
 
 	if(APPLE)
 		set(type objective-c++-header)
@@ -16,12 +16,12 @@ if(ENABLE_PCH)
 	endif()
 
 	set_source_files_properties(
-		pch.h PROPERTIES
+		PCH/pch.h PROPERTIES
 		COMPILE_FLAGS "-x ${type}"
 		HEADER_FILE_ONLY 0
 		LANGUAGE CXX)
 
-	add_library(pch STATIC pch.h)
+	add_library(pch STATIC PCH/pch.h)
 
 	add_custom_command(
 		TARGET pch
@@ -41,22 +41,19 @@ macro(add_dolphin_library lib srcs libs)
 		add_dependencies(${lib} pch)
 		set_source_files_properties(
 			${srcs} PROPERTIES
-			COMPILE_FLAGS "-include ${pch_out_filename}"
+			COMPILE_FLAGS "-include '${pch_out_filename}'"
 			OBJECT_DEPENDS "${pch_lib_filename}")
 	endif(ENABLE_PCH)
 endmacro(add_dolphin_library)
 
 add_subdirectory(Core)
+if (ANDROID)
+	add_subdirectory(Android/jni)
+endif()
+add_subdirectory(UnitTests)
 
 if (DSPTOOL)
 	add_subdirectory(DSPTool)
 endif()
 
-if (UNITTESTS)
-	add_subdirectory(UnitTests)
-endif()
-
-
-
-
-# TODO: Add DSPSpy and TestSuite. Preferrably make them option()s and cpack components
+# TODO: Add DSPSpy. Preferrably make it option() and cpack component

@@ -1,17 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
@@ -24,7 +16,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
@@ -39,17 +31,17 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Source\VSProps\Base.props" />
+    <Import Project="..\..\Source\VSProps\ClDisableAllWarnings.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <ClInclude Include="src\bsdqueue.h" />
     <ClInclude Include="src\codelength.h" />
     <ClInclude Include="src\connecthostport.h" />
-    <ClInclude Include="src\declspec.h" />
     <ClInclude Include="src\igd_desc_parse.h" />
     <ClInclude Include="src\minisoap.h" />
     <ClInclude Include="src\minissdpc.h" />
     <ClInclude Include="src\miniupnpc.h" />
+    <ClInclude Include="src\miniupnpc_declspec.h" />
     <ClInclude Include="src\miniupnpcstrings.h" />
     <ClInclude Include="src\miniupnpctypes.h" />
     <ClInclude Include="src\miniwget.h" />
@@ -57,6 +49,7 @@
     <ClInclude Include="src\portlistingparse.h" />
     <ClInclude Include="src\receivedata.h" />
     <ClInclude Include="src\upnpcommands.h" />
+    <ClInclude Include="src\upnpdev.h" />
     <ClInclude Include="src\upnperrors.h" />
     <ClInclude Include="src\upnpreplyparse.h" />
   </ItemGroup>
@@ -64,20 +57,20 @@
     <ClCompile Include="src\connecthostport.c" />
     <ClCompile Include="src\igd_desc_parse.c" />
     <ClCompile Include="src\minisoap.c" />
+    <ClCompile Include="src\minissdpc.c" />
     <ClCompile Include="src\miniupnpc.c" />
     <ClCompile Include="src\miniwget.c" />
     <ClCompile Include="src\minixml.c" />
     <ClCompile Include="src\portlistingparse.c" />
     <ClCompile Include="src\receivedata.c" />
-    <ClCompile Include="src\upnpc.c" />
     <ClCompile Include="src\upnpcommands.c" />
+    <ClCompile Include="src\upnpdev.c" />
     <ClCompile Include="src\upnperrors.c" />
     <ClCompile Include="src\upnpreplyparse.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />
     <None Include="README" />
-    <None Include="src\miniupnpc.def" />
     <None Include="VERSION" />
   </ItemGroup>
   <ItemGroup>

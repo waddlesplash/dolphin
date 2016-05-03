@@ -1,4 +1,4 @@
-# gtk, msw, osx and shared files as of r74856
+# gtk, msw, osx and shared files as of r75363
 
 set(SRCS_AUI
 	"src/aui/auibar.cpp"
@@ -861,15 +861,14 @@ set(SRCS
 	${SRCS_COMMON}
 	${SRCS_GENERIC})
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if(APPLE)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++98")
 	add_definitions(-D__WXOSX_COCOA__)
 	set(SRCS
 		${SRCS}
 		${SRCS_GENERICOSX}
 		${SRCS_OSX}
 		${SRCS_UNIX})
-	include_directories(../libpng)
-	add_subdirectory(../libpng ../libpng)
 	set(LIBS
 		png
 		iconv
@@ -881,8 +880,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		${COREFUND_LIBRARY}
 		${CORESERV_LIBRARY}
 		${IOK_LIBRARY}
+		${OPENGL_LIBRARY}
 		${QUICKTIME_LIBRARY})
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 	add_definitions(-D__WXGTK__)
 	set(SRCS
 		${SRCS}
@@ -903,12 +904,8 @@ else()
 endif()
 
 add_definitions(-DWXBUILDING)
-add_definitions(-Wno-deprecated-declarations)
-add_definitions(-Wno-shadow)
-add_definitions(-Wno-parentheses-equality)
-add_definitions(-Wno-self-assign)
-add_definitions(-Wno-null-conversion)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++98")
+# wxWidgets warnings are not our problem.
+add_definitions(-w)
 
 enable_precompiled_headers(include/wx/wxprec.h src/common/dummy.cpp SRCS)
 add_library(wx STATIC ${PNG_SRCS} ${SRCS})
