@@ -391,8 +391,7 @@ void Init()
 
 
 	g_GCAM = ((SConfig::GetInstance().m_SIDevice[0] == SIDEVICE_AM_BASEBOARD)
-	&& (SConfig::GetInstance().m_EXIDevice[2] == EXIDEVICE_AM_BASEBOARD))
-	? 1 : 0;
+		&& (SConfig::GetInstance().m_EXIDevice[2] == EXIDEVICE_AM_BASEBOARD));
 
 	if(g_GCAM)
 	{
@@ -707,9 +706,6 @@ void ExecuteCommand(u32 command_0, u32 command_1, u32 command_2, u32 output_addr
 	{
 		ERROR_LOG(DVDINTERFACE, "DVD: %08x, %08x, %08x, DMA=addr:%08x,len:%08x,ctrl:%08x",
 		          command_0, command_1, command_2, output_address, output_length, s_DICR.Hex);
-		// decrypt command. But we have a zero key, that simplifies things a lot.
-		// If you get crazy dvd command errors, make sure 0x80000000 - 0x8000000c is zero'd
-		command_0 <<= 24;
 
 		WriteImmediate(AMBaseboard::ExecuteCommand(command_0 << 24,
 			output_length, output_address, command_1 << 2), output_address, reply_to_ios);
