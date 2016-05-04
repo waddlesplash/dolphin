@@ -2,13 +2,14 @@
 // Licensed under GPLv2
 // Refer to the license.txt file included.
 
-#include "Common.h" // Common
-#include "ChunkFile.h"
+#include "Common/Common.h" // Common
+#include "Common/ChunkFile.h"
 #include "../ConfigManager.h"
 #include "../CoreTiming.h"
 #include "../HW/SystemTimers.h"
 #include "Memmap.h"
 #include "DVDInterface.h"
+#include "Core/Boot/Boot.h"
 
 #include "AMBaseboard.h"
 
@@ -38,14 +39,14 @@ static inline void PrintMBBuffer( u32 Address )
 
 void Init( void )
 {
-	u32 gameid;
-	memset( media_buffer, 0, sizeof(media_buffer) );
+	memset( media_buffer, 0, sizeof(media_buffer));
 
 	//Convert game ID into hex
-	sscanf( SConfig::GetInstance().m_LocalCoreStartupParameter.GetUniqueID().c_str(), "%s", &gameid );
+	const char* id = SConfig::GetInstance().GetUniqueID().c_str();
+	u32 gameid = (id[0] << 24) + (id[1] << 16) + (id[2] << 8) + id[3];
 
 	// This is checking for the real game IDs (not those people made up) (See boot.id within the game)
-	switch(Common::swap32(gameid))
+	switch(gameid)
 	{
 		// SBGE - F-ZERO AX
 		case 0x53424745:		
@@ -93,7 +94,7 @@ void Init( void )
 		m_netctrl = new File::IOFile( netctrl_Filename, "wb+" );
 	}
 
-	std::string dimm_Filename( File::GetUserPath(D_TRIUSER_IDX) + "tridimm_" + SConfig::GetInstance().m_LocalCoreStartupParameter.GetUniqueID() + ".bin" );
+	std::string dimm_Filename( File::GetUserPath(D_TRIUSER_IDX) + "tridimm_" + SConfig::GetInstance().GetUniqueID() + ".bin" );
 	if( File::Exists( dimm_Filename ) )
 	{
 		m_dimm = new File::IOFile( dimm_Filename, "rb+" );		
@@ -212,7 +213,7 @@ u32 ExecuteCommand( u32 Command, u32 Length, u32 Address, u32 Offset )
 			{
 				PanicAlertT("Unhandled Media Board Read");
 			}
-			if( !DVDInterface::DVDRead( Offset, Address, Length) )
+			if( !CBoot::DVDRead( Offset, Address, Length, false) )
 			{
 				PanicAlertT("Can't read from DVD_Plugin - DVD-Interface: Fatal Error");
 			}

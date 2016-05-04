@@ -890,7 +890,7 @@ void ExecuteCommand(u32 command_0, u32 command_1, u32 command_2, u32 output_addr
 
 	// Seems to be used by both GC and Wii
 	case DVDLowSeek:
-		if (!GCAM)
+		if (!g_GCAM)
 		{
 			// Currently unimplemented
 			INFO_LOG(DVDINTERFACE, "Seek: offset=%09" PRIx64 " (ignoring)", (u64)command_1 << 2);

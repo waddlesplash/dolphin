@@ -16,7 +16,7 @@ CEXIAMBaseboard::CEXIAMBaseboard()
 	: m_position(0)
 	, m_have_irq(false)
 {
-	std::string backup_Filename( File::GetUserPath(D_TRIUSER_IDX) + "tribackup_" + SConfig::GetInstance().m_LocalCoreStartupParameter.GetUniqueID() + ".bin" );
+	std::string backup_Filename(File::GetUserPath(D_TRIUSER_IDX) + "tribackup_" + SConfig::GetInstance().GetUniqueID() + ".bin");
 
 	if( File::Exists( backup_Filename ) )
 	{

@@ -5,7 +5,8 @@
 #ifndef _AMBASEBOARD_H
 #define _AMBASEBOARD_H
 
-#include "CommonTypes.h"
+#include "Common/CommonTypes.h"
+
 class PointerWrap;
 
 namespace AMBaseboard

@@ -9,6 +9,7 @@
 #include "AMBaseboard.h"
 
 #include "Common/CommonTypes.h"
+#include "Common/FileUtil.h"
 #include "Common/MsgHandler.h"
 #include "Common/Logging/Log.h"
 #include "Core/HW/GCPad.h"
@@ -165,7 +166,7 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 					case 0x10:
 					{
 						DEBUG_LOG(AMBASEBOARDDEBUG, "GC-AM: Command 10, %02x (READ STATUS&SWITCHES)", ptr(1));
-						SPADStatus PadStatus;
+						GCPadStatus PadStatus;
 						memset(&PadStatus, 0 ,sizeof(PadStatus));
 						Pad::GetStatus(ISIDevice::m_iDeviceNumber, &PadStatus);
 						res[resp++] = 0x10;
@@ -513,7 +514,7 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 											} else if( m_card_clean == 2 )
 											{
 												std::string card_filename( File::GetUserPath(D_TRIUSER_IDX) +
-												"tricard_" + SConfig::GetInstance().m_LocalCoreStartupParameter.GetUniqueID() + ".bin" );
+												"tricard_" + SConfig::GetInstance().GetUniqueID() + ".bin" );
 
 												if( File::Exists( card_filename ) )
 												{
@@ -552,7 +553,7 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 											u32 POff=0;
 
 											std::string card_filename( File::GetUserPath(D_TRIUSER_IDX) +
-											"tricard_" + SConfig::GetInstance().m_LocalCoreStartupParameter.GetUniqueID() + ".bin" );
+											"tricard_" + SConfig::GetInstance().GetUniqueID() + ".bin" );
 
 											if( File::Exists( card_filename ) )
 											{
@@ -613,7 +614,7 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 											NOTICE_LOG(AMBASEBOARDDEBUG, "CARDWrite: %u", m_card_memory_size );
 
 											std::string card_filename( File::GetUserPath(D_TRIUSER_IDX) +
-											"tricard_" + SConfig::GetInstance().m_LocalCoreStartupParameter.GetUniqueID() + ".bin" );
+											"tricard_" + SConfig::GetInstance().GetUniqueID() + ".bin" );
 
 											File::IOFile card = File::IOFile( card_filename, "wb+" );
 											card.WriteBytes( m_card_memory, m_card_memory_size );
@@ -709,27 +710,27 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 								{
 								// read ID data
 								case 0x10:
-									msg.addData(1);
-									if (!memcmp(SConfig::GetInstance().m_LocalCoreStartupParameter.GetUniqueID().c_str(), "RELSAB", 6))
-										msg.addData("namco ltd.;FCA-1;Ver1.01;JPN,Multipurpose + Rotary Encoder");
+									msg.AddData(1);
+									if (!memcmp(SConfig::GetInstance().GetUniqueID().c_str(), "RELSAB", 6))
+										msg.AddData("namco ltd.;FCA-1;Ver1.01;JPN,Multipurpose + Rotary Encoder");
 									else
-										msg.addData("SEGA ENTERPRISES,LTD.;I/O BD JVS;837-13551;Ver1.00");
-									msg.addData(0);
+										msg.AddData("SEGA ENTERPRISES,LTD.;I/O BD JVS;837-13551;Ver1.00");
+									msg.AddData(0);
 									break;
 								// get command format revision
 								case 0x11:
-									msg.addData(1);
-									msg.addData(0x11);
+									msg.AddData(1);
+									msg.AddData(0x11);
 									break;
 								// get JVS revision
 								case 0x12:
-									msg.addData(1);
-									msg.addData(0x20);
+									msg.AddData(1);
+									msg.AddData(0x20);
 									break;
 								// get supported communications versions
 								case 0x13:
-									msg.addData(1);
-									msg.addData(0x10);
+									msg.AddData(1);
+									msg.AddData(0x10);
 									break;
 
 								// get slave features
@@ -749,32 +750,32 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 									0x15: Backup
 								*/
 								case 0x14:
-									msg.addData(1);
+									msg.AddData(1);
 									switch(AMBaseboard::GetControllerType())
 									{
 										case 1:
 											// 1 Player (12-bits), 1 Coin slot, 8 Analog-in
-											msg.addData((void *)"\x01\x01\x0C\x00", 4);
-											msg.addData((void *)"\x02\x01\x00\x00", 4);
-											msg.addData((void *)"\x03\x06\x00\x00", 4);
-											msg.addData((void *)"\x00\x00\x00\x00", 4);
+											msg.AddData((void *)"\x01\x01\x0C\x00", 4);
+											msg.AddData((void *)"\x02\x01\x00\x00", 4);
+											msg.AddData((void *)"\x03\x06\x00\x00", 4);
+											msg.AddData((void *)"\x00\x00\x00\x00", 4);
 											break;
 										case 2:
 											// 2 Player, 2 Coin slots, 4 Analogs, 8Bit out
-											msg.addData((void *)"\x01\x02\x0D\x00", 4);
-											msg.addData((void *)"\x02\x02\x00\x00", 4);
-											msg.addData((void *)"\x03\x04\x00\x00", 4);
-											msg.addData((void *)"\x12\x08\x00\x00", 4);
-											msg.addData((void *)"\x00\x00\x00\x00", 4);
+											msg.AddData((void *)"\x01\x02\x0D\x00", 4);
+											msg.AddData((void *)"\x02\x02\x00\x00", 4);
+											msg.AddData((void *)"\x03\x04\x00\x00", 4);
+											msg.AddData((void *)"\x12\x08\x00\x00", 4);
+											msg.AddData((void *)"\x00\x00\x00\x00", 4);
 											break;
 										default:
 										case 3:
 											// 1 Player, 1 Coin slot, 3 Analogs, 8Bit out
-											msg.addData((void *)"\x01\x01\x13\x00", 4);
-											msg.addData((void *)"\x02\x02\x00\x00", 4);
-											msg.addData((void *)"\x03\x03\x00\x00", 4);
-											msg.addData((void *)"\x13\x08\x00\x00", 4);
-											msg.addData((void *)"\x00\x00\x00\x00", 4);
+											msg.AddData((void *)"\x01\x01\x13\x00", 4);
+											msg.AddData((void *)"\x02\x02\x00\x00", 4);
+											msg.AddData((void *)"\x03\x03\x00\x00", 4);
+											msg.AddData((void *)"\x13\x08\x00\x00", 4);
+											msg.AddData((void *)"\x00\x00\x00\x00", 4);
 											break;
 									}
 									break;
@@ -789,20 +790,20 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 									int player_count		= *jvs_io++;
 									int player_byte_count	= *jvs_io++;
 
-									msg.addData(1);
+									msg.AddData(1);
 
-									SPADStatus PadStatus;
+									GCPadStatus PadStatus;
 									Pad::GetStatus(0, &PadStatus);
 
 									// Test button
 									if( PadStatus.button & PAD_BUTTON_Y )
-										msg.addData(0x80);
+										msg.AddData(0x80);
 									else
-										msg.addData(0x00);
+										msg.AddData(0x00);
 
 									for( int i=0; i<player_count; ++i )
 									{
-										SPADStatus PadStatus;
+										GCPadStatus PadStatus;
 										Pad::GetStatus(i, &PadStatus);
 										unsigned char player_data[3] = {0,0,0};
 
@@ -881,16 +882,16 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 										}
 
 										for( int j=0; j<player_byte_count; ++j )
-											msg.addData(player_data[j]);
+											msg.AddData(player_data[j]);
 									}
 									break;
 								}
 								// read m_coin inputs
 								case 0x21:
 								{
-									SPADStatus PadStatus;
+									GCPadStatus PadStatus;
 									int slots = *jvs_io++;
-									msg.addData(1);
+									msg.AddData(1);
 									for( int i = 0; i < slots; i++ )
 									{
 										Pad::GetStatus(i, &PadStatus);
@@ -899,8 +900,8 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 											m_coin[i]++;
 										}
 										m_coin_pressed[i]=PadStatus.button & PAD_TRIGGER_Z;
-										msg.addData((m_coin[i]>>8)&0x3f);
-										msg.addData(m_coin[i]&0xff);
+										msg.AddData((m_coin[i]>>8)&0x3f);
+										msg.AddData(m_coin[i]&0xff);
 									}
 									//NOTICE_LOG(AMBASEBOARDDEBUG, "JVS-IO:Get Coins Slots:%u Unk:%u", slots, unk );
 									break;
@@ -908,9 +909,9 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 								//  read analog inputs
 								case 0x22:
 								{
-									msg.addData(1);	// status
+									msg.AddData(1);	// status
 									int analogs = *jvs_io++;
-									SPADStatus PadStatus;
+									GCPadStatus PadStatus;
 									Pad::GetStatus(0, &PadStatus);
 
 									switch(AMBaseboard::GetControllerType())
@@ -920,64 +921,64 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 											// Steering
 											if( m_motorforce )
 											{
-												msg.addData( m_motorforce_x >> 8 );
-												msg.addData( m_motorforce_x & 0xFF );
+												msg.AddData( m_motorforce_x >> 8 );
+												msg.AddData( m_motorforce_x & 0xFF );
 
-												msg.addData( m_motorforce_y >> 8);
-												msg.addData( m_motorforce_y & 0xFF );
+												msg.AddData( m_motorforce_y >> 8);
+												msg.AddData( m_motorforce_y & 0xFF );
 											}
 											else
 											{
-												msg.addData(PadStatus.stickX);
-												msg.addData((u8)0);
+												msg.AddData(PadStatus.stickX);
+												msg.AddData((u8)0);
 
-												msg.addData(PadStatus.stickY);
-												msg.addData((u8)0);
+												msg.AddData(PadStatus.stickY);
+												msg.AddData((u8)0);
 											}
 
 											// Unused
-											msg.addData((u8)0);
-											msg.addData((u8)0);
-											msg.addData((u8)0);
-											msg.addData((u8)0);
+											msg.AddData((u8)0);
+											msg.AddData((u8)0);
+											msg.AddData((u8)0);
+											msg.AddData((u8)0);
 
 											// Gas
-											msg.addData(PadStatus.triggerRight);
-											msg.addData((u8)0);
+											msg.AddData(PadStatus.triggerRight);
+											msg.AddData((u8)0);
 
 											// Brake
-											msg.addData(PadStatus.triggerLeft);
-											msg.addData((u8)0);
+											msg.AddData(PadStatus.triggerLeft);
+											msg.AddData((u8)0);
 
 											break;
 										//  Virtua Strike games
 										case 2:
-											SPADStatus PadStatus2;
+											GCPadStatus PadStatus2;
 											Pad::GetStatus(1, &PadStatus2);
 
-											msg.addData(PadStatus.stickX);
-											msg.addData((u8)0);
-											msg.addData(PadStatus.stickY);
-											msg.addData((u8)0);
+											msg.AddData(PadStatus.stickX);
+											msg.AddData((u8)0);
+											msg.AddData(PadStatus.stickY);
+											msg.AddData((u8)0);
 
-											msg.addData(PadStatus2.stickX);
-											msg.addData((u8)0);
-											msg.addData(PadStatus2.stickY);
-											msg.addData((u8)0);
+											msg.AddData(PadStatus2.stickX);
+											msg.AddData((u8)0);
+											msg.AddData(PadStatus2.stickY);
+											msg.AddData((u8)0);
 											break;
 										// Mario Kart and other games
 										case 3:
 											// Steering
-											msg.addData(PadStatus.stickX);
-											msg.addData((u8)0);
+											msg.AddData(PadStatus.stickX);
+											msg.AddData((u8)0);
 
 											// Gas
-											msg.addData(PadStatus.triggerRight);
-											msg.addData((u8)0);
+											msg.AddData(PadStatus.triggerRight);
+											msg.AddData((u8)0);
 
 											// Brake
-											msg.addData(PadStatus.triggerLeft);
-											msg.addData((u8)0);
+											msg.AddData(PadStatus.triggerLeft);
+											msg.AddData((u8)0);
 											break;
 									}
 								}
@@ -986,7 +987,7 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 								{
 									int slot = *jvs_io++;
 									m_coin[slot]-= (*jvs_io++<<8)|*jvs_io++;
-									msg.addData(1);
+									msg.AddData(1);
 									break;
 								}
 								// general-purpose output
@@ -994,7 +995,7 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 								{
 									int bytes = *jvs_io++;
 									while (bytes--) {*jvs_io++;}
-									msg.addData(1);
+									msg.AddData(1);
 									break;
 								}
 								// output the total number of coins
@@ -1002,7 +1003,7 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 								{
 									int slot = *jvs_io++;
 									m_coin[slot]+= (*jvs_io++<<8)|*jvs_io++;
-									msg.addData(1);
+									msg.AddData(1);
 									break;
 								}
 								case 0x70: // custom namco's command subset
@@ -1010,10 +1011,10 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 									int cmd = *jvs_io++;
 									if (cmd == 0x18) { // id check
 										jvs_io+=4;
-										msg.addData(1);
-										msg.addData(0xff);
+										msg.AddData(1);
+										msg.AddData(0xff);
 									} else {
-										msg.addData(1);
+										msg.AddData(1);
 										///ERROR_LOG(AMBASEBOARDDEBUG, "JVS-IO:Unknown");
 									}
 									break;
@@ -1028,7 +1029,7 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* _pBuffer, int _iLength)
 								case 0xf1:
 									node = *jvs_io++;
 									ERROR_LOG(AMBASEBOARDDEBUG, "JVS SET ADDRESS, node=%d", node);
-									msg.addData(node == 1);
+									msg.AddData(node == 1);
 									d10_1 &= ~1;
 									break;
 								default:
